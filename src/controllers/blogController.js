@@ -71,13 +71,19 @@ module.exports.BlogCategory = {
 module.exports.BlogPost = {
     list: async (req, res) => {
 
+        // SEARCHING: URL?search[key1]=value1&search[key2]=value2
         const search = req.query?.search || {}
-        console.log(search)
+        // console.log(search)
 
         for (let key in search) search[key] = { $regex: search[key], $options: 'i' }
-        console.log(search)
+        // console.log(search)
 
-        const data = await BlogPost.find(search).populate('blogCategoryId')
+        // Cancelled -> SORTING: URL?sort[key1]=1&sort[key2]=-1 (1:ASC, -1:DESC)
+        // mongoose=^8.0 -> SORTING: URL?sort[key1]=asc&sort[key2]=desc (asc: A->Z - desc: Z->A)
+        const sort = req.query?.sort || {}
+        console.log(sort)
+
+        const data = await BlogPost.find(search).sort(sort)
 
         res.status(200).send({
             error: false,
