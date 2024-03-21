@@ -83,7 +83,21 @@ module.exports.BlogPost = {
         const sort = req.query?.sort || {}
         console.log(sort)
 
-        const data = await BlogPost.find(search).sort(sort)
+        // PAGINATION: URL?page=1&limit=10
+        // const limit = req.query?.limit || 20
+        // let limit = req.query?.limit || (process.env?.PAGE_SIZE || 20)
+        // limit = Number(limit)
+        let limit = Number(req.query?.limit)
+        limit = limit > 0 ? limit : Number(process.env?.PAGE_SIZE || 20)
+
+        let page = Number(req.query?.page)
+        page = (page > 0 ? page : 1) - 1
+
+        let skip = Number(req.query?.skip)
+        skip = skip > 0 ? skip : (page * limit)
+
+        // http://127.0.0.1:8000/blog/post?search[title]=10&sort[createdAt]=desc&limit=5&page=2
+        const data = await BlogPost.find(search).sort(sort).skip(skip).limit(limit).populate('blogCategoryId')
 
         res.status(200).send({
             error: false,
