@@ -70,7 +70,14 @@ module.exports.BlogCategory = {
 //BlogPost Controller
 module.exports.BlogPost = {
     list: async (req, res) => {
-        const data = await BlogPost.find().populate('blogCategoryId')
+
+        const search = req.query?.search || {}
+        console.log(search)
+
+        for (let key in search) search[key] = { $regex: search[key], $options: 'i' }
+        console.log(search)
+
+        const data = await BlogPost.find(search).populate('blogCategoryId')
 
         res.status(200).send({
             error: false,
