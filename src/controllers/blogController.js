@@ -11,7 +11,9 @@ module.exports.BlogCategory = {
 
     list: async (req, res) => {
 
-        const data = await BlogCategory.find()
+        // const data = await BlogCategory.find()
+        const data = await req.getModelList(BlogCategory)
+
 
         res.status(200).send({
             error: false,
@@ -71,6 +73,10 @@ module.exports.BlogCategory = {
 module.exports.BlogPost = {
     list: async (req, res) => {
 
+        /*  **********without middleware***********
+
+        // Searching & Sorting & Pagination:
+
         // SEARCHING: URL?search[key1]=value1&search[key2]=value2
         const search = req.query?.search || {}
         // console.log(search)
@@ -104,6 +110,22 @@ module.exports.BlogPost = {
             count: data.length,
             result: data
         })
+
+         */
+
+        // console.log(req)
+
+        const data = await req.getModelList(BlogPost, 'blogCategoryId')
+
+        res.status(200).send({
+            error: false,
+            count: data.length,
+            // details: await req.getModelListDetails(BlogPost),
+            result: data,
+        })
+
+
+
 
     },
 
